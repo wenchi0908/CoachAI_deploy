@@ -1,0 +1,45 @@
+version: "3.3"
+
+services:
+    frontend-web:
+        init: true
+        build: 
+            context: ./frontend-web
+            args:
+                - HOST=${HOST}
+                - PORT_MAIN=${PORT_MAIN}
+                - PORT_SPEED=${PORT_SPEED}
+        volumes:
+            - front_src_vol:/output:rw
+    www:
+        stdin_open: true
+        tty: true
+        init: true
+        build: 
+            context: ./www
+            args:
+                - DB_host=${DB_host}
+                - DB_port=${DB_port}
+                - DB_user=${DB_user}
+                - DB_password=${DB_password}
+                - DB_database=${DB_database}
+        ports:
+            - "55000:55000"
+            - "55001:55001"
+        depends_on:
+            - frontend-web
+        volumes:
+            - front_src_vol:/output:rw
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+volumes:
+    front_src_vol:
+        driver: local
+        driver_opts:
+            o: bind
+            type: none
+            device: $PWD/front_src
