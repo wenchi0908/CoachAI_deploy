@@ -23,6 +23,7 @@ services:
                 - DB_user=${DB_user}
                 - DB_password=${DB_password}
                 - DB_database=${DB_database}
+                - DB_database_double=${DB_database_double}
         ports:
             - "55000:55000"
             - "55001:55001"
