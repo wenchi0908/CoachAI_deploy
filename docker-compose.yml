@@ -2,6 +2,7 @@ version: "3.3"
 
 services:
     frontend-web:
+        tty: true
         init: true
         build: 
             context: ./frontend-web
@@ -9,8 +10,12 @@ services:
                 - HOST=${HOST}
                 - PORT_MAIN=${PORT_MAIN}
                 - PORT_SPEED=${PORT_SPEED}
+        ports:
+            - "${PORT_MAIN}:${PORT_MAIN}"
+            - "${PORT_SPEED}:${PORT_SPEED}"
         volumes:
-            - front_src_vol:/output:rw
+            - ./nginx.tmp:/nginx.tmp:rw
+        command: /bin/bash -c "envsubst '$${PORT_MAIN} $${PORT_SPEED}' < /nginx.tmp > /etc/nginx/conf.d/nginx.conf && exec nginx -g 'daemon off;'";
     www:
         stdin_open: true
         tty: true
@@ -24,23 +29,9 @@ services:
                 - DB_password=${DB_password}
                 - DB_database=${DB_database}
                 - DB_database_double=${DB_database_double}
-        ports:
-            - "55000:55000"
-            - "55001:55001"
-        depends_on:
-            - frontend-web
-        volumes:
-            - front_src_vol:/output:rw
         deploy:
             restart_policy:
                 condition: on-failure
                 delay: 5s
                 max_attempts: 3
                 window: 120s
-volumes:
-    front_src_vol:
-        driver: local
-        driver_opts:
-            o: bind
-            type: none
-            device: $PWD/front_src
