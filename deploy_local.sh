@@ -18,11 +18,6 @@ while getopts 'bf' OPTION; do
             ;;
     esac
 done
-if [ $build_b -eq 0 ] && [ $build_f -eq 0 ]
-then
-    build_b=1
-    build_f=1
-fi
 
 # clean folder
 rm -rf ./front_src/
