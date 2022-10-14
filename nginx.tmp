@@ -1,0 +1,49 @@
+server {
+    listen ${PORT_MAIN};
+    server_name localhost;
+    
+    root /usr/share/nginx/html/;
+
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+    location /api {
+        client_max_body_size 10m;
+        proxy_pass http://www:55000;
+
+        proxy_redirect      off;
+        proxy_http_version  1.1;
+        proxy_set_header Connection  "";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+log_format dm '"$request_body"';
+server {
+    listen ${PORT_SPEED};
+    server_name localhost;
+
+    location /api {
+        client_max_body_size 10m;
+        proxy_pass http://www:55001;
+
+        proxy_redirect      off;
+        proxy_http_version  1.1;
+        proxy_set_header Connection  "";
+        proxy_set_header Host $http_host;
+        proxy_set_header content-type "application/x-www-form-urlencoded";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_send_timeout 300;
+        proxy_read_timeout 300;
+        proxy_connect_timeout 300;
+
+        access_log  /var/log/nginx/postdata-access.log dm;
+    }
+}
+
