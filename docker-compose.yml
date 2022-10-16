@@ -2,8 +2,8 @@ version: "3.3"
 
 services:
     frontend-web:
+        stdin_open: true
         tty: true
-        init: true
         build: 
             context: ./frontend-web
             args:
@@ -18,10 +18,10 @@ services:
         volumes:
             - ./nginx.tmp:/nginx.tmp:rw
         command: /bin/bash -c "envsubst '$${PORT_MAIN} $${PORT_SPEED}' < /nginx.tmp > /etc/nginx/conf.d/nginx.conf && exec nginx -g 'daemon off;'";
+        
     www:
         stdin_open: true
         tty: true
-        init: true
         build: 
             context: ./www
             args:
@@ -31,9 +31,3 @@ services:
                 - DB_password=${DB_password}
                 - DB_database=${DB_database}
                 - DB_database_double=${DB_database_double}
-        deploy:
-            restart_policy:
-                condition: on-failure
-                delay: 5s
-                max_attempts: 3
-                window: 120s
