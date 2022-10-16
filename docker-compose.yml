@@ -8,6 +8,7 @@ services:
             context: ./frontend-web
             args:
                 - HOST=${HOST}
+                - DOMAIN=${DOMAIN}
                 - PORT_MAIN=${PORT_MAIN}
                 - PORT_SPEED=${PORT_SPEED}
         ports:
@@ -15,8 +16,11 @@ services:
             - "${PORT_SPEED}:${PORT_SPEED}"
         depends_on:
             - www
+        restart: always
         volumes:
-            - ./nginx.tmp:/nginx.tmp:rw
+            - ./nginx/nginx_https.tmp:/nginx.tmp:rw
+            - ./certbot/www:/var/www/certbot:ro
+            - ./certbot/conf:/etc/letsencrypt:ro
         command: /bin/bash -c "envsubst '$${PORT_MAIN} $${PORT_SPEED}' < /nginx.tmp > /etc/nginx/conf.d/nginx.conf && exec nginx -g 'daemon off;'";
         
     www:
