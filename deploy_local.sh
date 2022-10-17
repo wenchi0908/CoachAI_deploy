@@ -51,7 +51,7 @@ echo "[ Static source created in container:frontend-web ]"
 
 # run app in container:www
 docker-compose up -d www
-docker-compose exec -itd www sh /APP/deploy.sh
+#docker-compose exec -itd www sh /APP/deploy.sh
 echo "[ App is running in container:www ]"
 docker-compose ps
 
