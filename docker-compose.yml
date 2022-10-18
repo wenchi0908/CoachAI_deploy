@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
     frontend-web:
-        stdin_open: true
+        #stdin_open: true
         build: 
             context: ./frontend-web
             args:
